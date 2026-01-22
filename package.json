@@ -12,7 +12,7 @@
     "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && npm run dev\"",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
-    "build": "cd backend && npm run build:frontend",
+    "build": "cd frontend && npm install --legacy-peer-deps && npm run build && cd ../backend",
     "start": "cd backend && npm start",
     "start:full": "cd backend && npm run start:full",
     "setup": "npm install && cd backend && npm install && cd ../frontend && npm install && cd .."
