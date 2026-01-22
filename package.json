@@ -3,11 +3,6 @@
   "version": "1.0.0",
   "description": "AI-powered furniture interior visualization platform",
   "private": true,
-  "workspaces": [
-    "frontend",
-    "backend",
-    "shared"
-  ],
   "scripts": {
     "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && npm run dev\"",
     "dev:backend": "cd backend && npm run dev",
