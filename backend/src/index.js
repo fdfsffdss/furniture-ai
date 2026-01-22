@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { initGemini } from './services/geminiService.js';
 import aiRoutes from './routes/aiRoutes.js';
 import interiorRoutes from './routes/interiorRoutes.js';
@@ -8,6 +10,9 @@ import uploadRoutes from './routes/uploadRoutes.js';
 import { rateLimiter, requestLogger, errorHandler } from './middleware/errorHandler.js';
 
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Инициализировать Gemini при запуске
 try {
@@ -24,7 +29,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: process.env.FRONTEND_URL || '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -36,6 +41,25 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Security and logging middleware
 app.use(requestLogger);
 app.use(rateLimiter);
+
+// Serve Next.js frontend (если существует)
+const frontendBuildPath = path.join(__dirname, '../../frontend/.next/standalone');
+const publicPath = path.join(__dirname, '../../frontend/public');
+
+// Проверяем существует ли Next.js build
+try {
+  if (NODE_ENV === 'production') {
+    // Используем Next.js standalone build
+    app.use(express.static(frontendBuildPath));
+    app.use(express.static(publicPath));
+    console.log('📦 Frontend build найден, serving статические файлы');
+  } else {
+    // Для development режима
+    console.log('🔄 Используется локальный Next.js dev server (http://localhost:3000)');
+  }
+} catch (error) {
+  console.warn('⚠️ Frontend build не найден:', error.message);
+}
 
 // Routes
 app.use('/api/ai', aiRoutes);

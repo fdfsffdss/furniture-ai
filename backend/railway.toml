@@ -1,5 +1,5 @@
-# Railway configuration for Node.js deployment
-# This file tells Railway how to deploy your backend
+# Railway configuration for monolithic app (Backend + Frontend)
+# Backend serves both API and static Next.js frontend
 
 builder = "nixpacks"
 
@@ -9,6 +9,17 @@ version = "20"
 
 [build.nixpacks.variables]
 NODE_ENV = "production"
+NPM_PRODUCTION = "false"
+
+[build.nixpacks.commands]
+install = "npm install --no-save && cd ../frontend && npm install --no-save && cd ../backend"
+build = "npm run build:frontend"
 
 [processes]
-web = "node src/index.js"
+web = "cd backend && node src/index.js"
+
+# Health check endpoint
+[processes.web.healthCheck]
+interval = 30
+timeout = 10
+path = "/health"

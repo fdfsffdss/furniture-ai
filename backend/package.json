@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/index.js",
-    "build": "echo 'Backend is pure Node.js'",
-    "start": "node src/index.js"
+    "build": "cd ../frontend && npm run build",
+    "build:frontend": "cd ../frontend && npm run build && npm run build:standalone",
+    "start": "node src/index.js",
+    "start:full": "npm run build:frontend && npm start"
   },
   "dependencies": {
     "@google/generative-ai": "^0.3.1",

@@ -2,6 +2,7 @@
 const nextConfig = {
   reactStrictMode: false,
   swcMinify: true,
+  output: 'standalone', // Для production - standalone mode
   images: {
     domains: ['localhost', 'storage.googleapis.com'],
   },
