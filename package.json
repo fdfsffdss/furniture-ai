@@ -12,7 +12,8 @@
     "dev": "concurrently \"cd frontend && npm run dev\" \"cd backend && npm run dev\"",
     "dev:backend": "cd backend && npm run dev",
     "dev:frontend": "cd frontend && npm run dev",
-    "build": "cd frontend && npm ci --prefer-offline --no-audit && npm run build",
+    "build:frontend": "cd frontend && npm ci --prefer-offline && npm run build",
+    "build": "npm run build:frontend",
     "start": "cd backend && npm start",
     "start:full": "cd backend && npm run start:full",
     "setup": "npm install && cd backend && npm install && cd ../frontend && npm install && cd .."

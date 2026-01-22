@@ -4,12 +4,7 @@ services:
     runtime: node
     region: oregon
     plan: free
-    buildCommand: |
-      cd frontend
-      npm ci --prefer-offline
-      npm run build
-      cd ../backend
-      npm ci --prefer-offline
+    buildCommand: npm install && npm run build:frontend && npm install --prefix=./backend
     startCommand: cd backend && node src/index.js
     healthCheckPath: /health
     envVars:
