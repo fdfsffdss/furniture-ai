@@ -3,21 +3,21 @@ set -e
 
 echo "🏗️ Building Furniture AI..."
 
+# Move to root
+cd "$(dirname "$0")" || exit 1
+
 # Install backend dependencies
 echo "📦 Installing backend dependencies..."
 cd backend
-npm install
+npm ci --prefer-offline --no-audit
 
 # Install frontend dependencies
 echo "📦 Installing frontend dependencies..."
 cd ../frontend
-npm install --legacy-peer-deps
+npm ci --prefer-offline --no-audit
 
 # Build frontend
 echo "🔨 Building frontend..."
 npm run build
-
-# Go back to backend
-cd ../backend
 
 echo "✅ Build complete!"
