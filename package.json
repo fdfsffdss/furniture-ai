@@ -1,0 +1,20 @@
+{
+  "name": "furniture-ai-site",
+  "version": "1.0.0",
+  "description": "AI-powered furniture interior visualization platform",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=frontend\" \"npm run dev --workspace=backend\"",
+    "build": "npm run build --workspace=frontend && npm run build --workspace=backend",
+    "start": "npm start --workspace=backend",
+    "lint": "npm run lint --workspace=frontend && npm run lint --workspace=backend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.1"
+  }
+}

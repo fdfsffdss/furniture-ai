@@ -1,0 +1,14 @@
+# Railway configuration for Node.js deployment
+# This file tells Railway how to deploy your backend
+
+builder = "nixpacks"
+
+[[build.nixpacks.pkgs]]
+name = "nodejs"
+version = "20"
+
+[build.nixpacks.variables]
+NODE_ENV = "production"
+
+[processes]
+web = "node src/index.js"
