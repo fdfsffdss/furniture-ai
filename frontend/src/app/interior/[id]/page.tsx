@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { interiorService } from '@/lib/api';
-import { ChatConsultant } from '@/components/ChatConsultant';
+import { interiorService } from '../../../../lib/api';
+import { ChatConsultant } from '../../../../components/ChatConsultant';
 import toast from 'react-hot-toast';
 
 export default function InteriorDetailPage() {
