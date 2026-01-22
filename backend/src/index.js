@@ -75,34 +75,27 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Status endpoint
-app.get('/', (req, res) => {
-  res.status(200).json({
-    status: '✅ Backend работает',
-    api: 'FurniAI - Мебельный AI-сервис',
-    version: '1.0.0',
-    environment: NODE_ENV,
-    endpoints: {
-      health: 'GET /health',
-      analyze: 'POST /api/ai/analyze',
-      chat: 'POST /api/ai/chat',
-      furniture_proposals: 'POST /api/ai/furniture-proposals',
-      suggest_furniture: 'POST /api/ai/suggest-furniture',
-      interiors: 'GET /api/interiors',
-      interior_detail: 'GET /api/interiors/:id',
-      publish: 'PUT /api/interiors/:id/publish',
-      add_furniture: 'PUT /api/interiors/:id/furniture',
-      upload: 'POST /api/upload'
+// Serve Next.js frontend for all non-API routes
+app.get('*', (req, res) => {
+  // Don't interfere with API routes
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({
+      error: 'NOT_FOUND',
+      message: 'API маршрут не найден',
+      path: req.path
+    });
+  }
+  
+  // Serve Next.js index.html for all other routes (SPA routing)
+  const indexPath = path.join(frontendBuildPath, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      // Fallback to public index.html or error page
+      res.status(404).json({
+        error: 'Frontend не найден',
+        message: 'Пожалуйста, убедитесь, что Next.js build успешно завершился'
+      });
     }
-  });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    error: 'NOT_FOUND',
-    message: 'Маршрут не найден',
-    path: req.path
   });
 });
 
