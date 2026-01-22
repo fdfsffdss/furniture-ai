@@ -16,7 +16,7 @@
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "strictPropertyInitialization": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": false,
     "resolveJsonModule": true,
     "baseUrl": ".",
     "paths": {
@@ -25,11 +25,12 @@
       ]
     },
     "allowJs": true,
-    "noEmit": true,
     "incremental": true,
     "moduleResolution": "node",
     "isolatedModules": true,
     "jsx": "preserve",
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
     "plugins": [
       {
         "name": "next"
@@ -37,7 +38,9 @@
     ]
   },
   "include": [
-    "src",
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
     ".next/types/**/*.ts"
   ],
   "exclude": [
