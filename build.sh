@@ -9,12 +9,12 @@ cd "$(dirname "$0")" || exit 1
 # Install backend dependencies
 echo "📦 Installing backend dependencies..."
 cd backend
-npm ci --prefer-offline --no-audit
+npm install
 
 # Install frontend dependencies
 echo "📦 Installing frontend dependencies..."
 cd ../frontend
-npm ci --prefer-offline --no-audit
+npm install
 
 # Build frontend
 echo "🔨 Building frontend..."
