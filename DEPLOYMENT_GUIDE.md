@@ -64,7 +64,7 @@ FRONTEND_URL=https://your-vercel-app.vercel.app
 3. Выберите ваш репозиторий
 4. Railway автоматически обнаружит Node.js проект
 5. **Variables** → добавьте:
-   - `GOOGLE_API_KEY`: ваш Gemini ключ
+   - `GOOGLE_API_KEY`: ваш Gemini ключ (начинается с AIza...)
    - `NODE_ENV`: production
    - `FRONTEND_URL`: оставьте пока пусто (обновим после Vercel)
 

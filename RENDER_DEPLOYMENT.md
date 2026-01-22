@@ -79,13 +79,13 @@ git push origin main
    - Нажмите **Add Environment Variable**
    - Добавьте:
      ```
-     GOOGLE_API_KEY = sk-...ваш-ключ...
+     GOOGLE_API_KEY = AIza...ваш-настоящий-ключ...
      NODE_ENV = production
      PORT = 3000
      NEXT_PUBLIC_API_URL = https://furniture-ai.onrender.com
      ```
      
-     (Замените `furniture-ai` на вашу конечный URL)
+     (Замените `AIza...` на ваш ключ из Google AI Studio)
 
 6. Нажмите **Create Web Service**
 
