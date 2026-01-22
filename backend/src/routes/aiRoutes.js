@@ -1,3 +1,7 @@
+// ...existing code...
+// ...existing code...
+// ...existing code...
+
 import express from 'express';
 import {
   analyzeInterior,
@@ -5,6 +9,8 @@ import {
   generateFurnitureProposals,
   suggestFurnitureFor,
   measureDimensionsFromPhoto,
+  addFurnitureToPhoto,
+  processPhotoWithPrompt,
 } from '../services/geminiService.js';
 import {
   validateImageUpload,
@@ -14,6 +20,53 @@ import {
 import { asyncHandler } from '../middleware/errorHandler.js';
 
 const router = express.Router();
+
+/**
+ * POST /api/ai/process-photo
+ * Универсальная обработка фото с произвольным промптом (image-to-image)
+ * body: { imageBase64: string, prompt: string }
+ */
+router.post(
+  '/process-photo',
+  validateImageUpload,
+  asyncHandler(async (req, res) => {
+    const { prompt } = req.body;
+    if (!prompt || typeof prompt !== 'string' || prompt.length < 5) {
+      return res.status(400).json({
+        error: 'INVALID_PROMPT',
+        message: 'Промпт обязателен (минимум 5 символов)'
+      });
+    }
+    const newImageBase64 = await processPhotoWithPrompt(req.cleanBase64, prompt);
+    res.status(200).json({ imageBase64: newImageBase64 });
+  })
+);
+
+/**
+ * POST /api/ai/add-furniture
+ * Добавить мебель на фото (image-to-image) с опциональными параметрами размеров
+ * body: { imageBase64: string, furnitureDescription: string, roomSize?: string, furnitureSize?: string, style?: string }
+ */
+router.post(
+  '/add-furniture',
+  validateImageUpload,
+  asyncHandler(async (req, res) => {
+    const { furnitureDescription, roomSize, furnitureSize, style } = req.body;
+    if (!furnitureDescription || typeof furnitureDescription !== 'string' || furnitureDescription.length < 3) {
+      return res.status(400).json({
+        error: 'INVALID_FURNITURE_DESCRIPTION',
+        message: 'Описание мебели обязательно'
+      });
+    }
+    const options = {
+      roomSize: roomSize || null,
+      furnitureSize: furnitureSize || null,
+      style: style || null,
+    };
+    const newImageBase64 = await addFurnitureToPhoto(req.cleanBase64, furnitureDescription, options);
+    res.status(200).json({ imageBase64: newImageBase64 });
+  })
+);
 
 /**
  * POST /api/ai/analyze

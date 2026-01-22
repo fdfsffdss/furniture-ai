@@ -106,6 +106,39 @@ export const aiService = {
     });
     return data;
   },
+
+  // Добавить мебель на фото (image-to-image) с опциональными параметрами
+  addFurnitureToPhoto: async (imageBase64: string, furnitureDescription: string, options?: { roomSize?: string; furnitureSize?: string; style?: string }) => {
+    if (!imageBase64 || typeof imageBase64 !== 'string') {
+      throw new Error('Изображение обязательно');
+    }
+    if (!furnitureDescription || typeof furnitureDescription !== 'string') {
+      throw new Error('Описание мебели обязательно');
+    }
+    const { data } = await api.post('/api/ai/add-furniture', {
+      imageBase64,
+      furnitureDescription,
+      roomSize: options?.roomSize || undefined,
+      furnitureSize: options?.furnitureSize || undefined,
+      style: options?.style || undefined,
+    });
+    return data;
+  },
+
+  // Универсальная обработка фото с произвольным промптом (image-to-image)
+  processPhotoWithPrompt: async (imageBase64: string, prompt: string) => {
+    if (!imageBase64 || typeof imageBase64 !== 'string') {
+      throw new Error('Изображение обязательно');
+    }
+    if (!prompt || typeof prompt !== 'string' || prompt.length < 5) {
+      throw new Error('Промпт обязателен (минимум 5 символов)');
+    }
+    const { data } = await api.post('/api/ai/process-photo', {
+      imageBase64,
+      prompt,
+    });
+    return data;
+  },
 };
 
 export const interiorService = {

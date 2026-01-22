@@ -1,3 +1,86 @@
+/**
+ * Универсальная функция обработки фото с произвольным промптом (image-to-image)
+ * @param {string} imageBase64 - исходное фото (base64)
+ * @param {string} prompt - описание изменений (на англ. или русском)
+ * @returns {Promise<string>} - новое изображение (base64)
+ */
+export async function processPhotoWithPrompt(imageBase64, prompt) {
+  try {
+    console.log('🖼️ Обрабатываю фото с промптом через Gemini...');
+    const currentModel = getModel();
+
+    const enhancedPrompt = `${prompt}
+
+Generate a photorealistic, beautiful, aesthetically pleasing image that matches the request. 
+Make sure all proportions are correct and changes blend naturally with the existing scene. 
+The result should look like a professional rendering.
+Return ONLY the new image as base64, no text.`;
+
+    const response = await retryWithBackoff(async () => {
+      return await currentModel.generateContent({
+        contents: [
+          {
+            role: 'user',
+            parts: [
+              {
+                inlineData: {
+                  mimeType: 'image/jpeg',
+                  data: imageBase64,
+                },
+              },
+              { text: enhancedPrompt },
+            ],
+          },
+        ],
+      });
+    });
+
+    // Gemini может вернуть base64 или ссылку, парсим ответ
+    const text = response.response.text();
+    // Попробуем найти base64-строку в ответе
+    const base64Match = text.match(/[A-Za-z0-9+/=]{100,}/);
+    if (base64Match) {
+      return base64Match[0];
+    }
+    throw new Error('Gemini не вернул изображение');
+  } catch (error) {
+    console.error('❌ Ошибка обработки фото:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Добавить мебель на фото с помощью Gemini (image-to-image)
+ * @param {string} imageBase64 - исходное фото (base64)
+ * @param {string} furnitureDescription - описание мебели (на англ. или русском)
+ * @param {object} options - опциональные параметры (размеры, стиль и т.д.)
+ * @returns {Promise<string>} - новое изображение (base64)
+ */
+export async function addFurnitureToPhoto(imageBase64, furnitureDescription, options = {}) {
+  try {
+    console.log('🪑 Генерирую изображение с добавленной мебелью через Gemini...');
+    
+    // Построить детальный промпт с размерами и стилем
+    let prompt = `Add the following furniture to this room photo: ${furnitureDescription}.`;
+    
+    if (options.roomSize) {
+      prompt += ` Room size: ${options.roomSize}.`;
+    }
+    
+    if (options.furnitureSize) {
+      prompt += ` Furniture dimensions: ${options.furnitureSize}.`;
+    }
+    
+    if (options.style) {
+      prompt += ` Style: ${options.style}.`;
+    }
+
+    return await processPhotoWithPrompt(imageBase64, prompt);
+  } catch (error) {
+    console.error('❌ Ошибка генерации изображения с мебелью:', error.message);
+    throw error;
+  }
+}
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 let client = null;

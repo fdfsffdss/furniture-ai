@@ -13,6 +13,66 @@ export default function UploadPage() {
   const { currentInterior, setCurrentInterior, furniture, addFurniture } = useInteriorStore();
   const [step, setStep] = useState(1);
   const [isCreating, setIsCreating] = useState(false);
+  const [furniturePrompt, setFurniturePrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [roomSize, setRoomSize] = useState('');
+  const [furnitureSize, setFurnitureSize] = useState('');
+  const [style, setStyle] = useState('');
+  const [customPrompt, setCustomPrompt] = useState('');
+  const [promptType, setPromptType] = useState<'furniture' | 'custom'>('furniture');
+
+  // Генерация нового изображения с мебелью
+  const handleGenerateWithFurniture = async () => {
+    if (!currentInterior?.imageBase64 || !furniturePrompt) {
+      toast.error('Укажите, какую мебель добавить!');
+      return;
+    }
+    setIsGenerating(true);
+    toast.loading('Генерирую новое изображение с мебелью...');
+    try {
+      const result = await aiService.addFurnitureToPhoto(currentInterior.imageBase64, furniturePrompt, {
+        roomSize,
+        furnitureSize,
+        style,
+      });
+      if (result?.imageBase64) {
+        setCurrentInterior({ ...currentInterior, imageBase64: result.imageBase64 });
+        toast.success('Новое изображение с мебелью готово!');
+      } else {
+        toast.error('Не удалось получить новое изображение');
+      }
+    } catch (error) {
+      toast.error('Ошибка генерации изображения');
+      console.error(error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // Обработка фото с произвольным промптом
+  const handleProcessWithCustomPrompt = async () => {
+    if (!currentInterior?.imageBase64 || !customPrompt) {
+      toast.error('Укажите, что изменить на фото!');
+      return;
+    }
+    setIsGenerating(true);
+    toast.loading('Обрабатываю фото...');
+    try {
+      const result = await aiService.processPhotoWithPrompt(currentInterior.imageBase64, customPrompt);
+      if (result?.imageBase64) {
+        setCurrentInterior({ ...currentInterior, imageBase64: result.imageBase64 });
+        toast.success('Фото обновлено!');
+        setCustomPrompt('');
+      } else {
+        toast.error('Не удалось обновить фото');
+      }
+    } catch (error) {
+      toast.error('Ошибка обработки фото');
+      console.error(error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const handleImageSelect = async (imageBase64: string, analysis: any) => {
     setCurrentInterior({ imageBase64, analysis });
@@ -98,6 +158,7 @@ export default function UploadPage() {
         </motion.div>
       )}
 
+
       {/* Step 2: Edit */}
       {step === 2 && currentInterior && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
@@ -115,11 +176,109 @@ export default function UploadPage() {
                 ))}
               </div>
 
+              <div className="mt-6 space-y-2">
+                {/* Toggle between furniture and custom prompt */}
+                <div className="flex gap-2 mb-4">
+                  <button
+                    onClick={() => setPromptType('furniture')}
+                    className={`flex-1 py-2 px-3 rounded font-semibold transition ${
+                      promptType === 'furniture'
+                        ? 'bg-primary-main text-white'
+                        : 'bg-dark-hover text-gray-400 border border-dark-border hover:text-white'
+                    }`}
+                    disabled={isGenerating}
+                  >
+                    🪑 Добавить мебель
+                  </button>
+                  <button
+                    onClick={() => setPromptType('custom')}
+                    className={`flex-1 py-2 px-3 rounded font-semibold transition ${
+                      promptType === 'custom'
+                        ? 'bg-primary-main text-white'
+                        : 'bg-dark-hover text-gray-400 border border-dark-border hover:text-white'
+                    }`}
+                    disabled={isGenerating}
+                  >
+                    ✨ Другое изменение
+                  </button>
+                </div>
+
+                {/* Furniture mode */}
+                {promptType === 'furniture' && (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 rounded border border-dark-border bg-dark-hover text-white text-sm"
+                      placeholder="Что добавить? (например, modern sofa and coffee table)"
+                      value={furniturePrompt}
+                      onChange={e => setFurniturePrompt(e.target.value)}
+                      disabled={isGenerating}
+                    />
+                    
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 rounded border border-dark-border bg-dark-hover text-white text-sm"
+                      placeholder="Размер комнаты (опционально, например: 5x4m)"
+                      value={roomSize}
+                      onChange={e => setRoomSize(e.target.value)}
+                      disabled={isGenerating}
+                    />
+                    
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 rounded border border-dark-border bg-dark-hover text-white text-sm"
+                      placeholder="Размер мебели (опционально, например: 2m wide sofa)"
+                      value={furnitureSize}
+                      onChange={e => setFurnitureSize(e.target.value)}
+                      disabled={isGenerating}
+                    />
+                    
+                    <input
+                      type="text"
+                      className="w-full px-3 py-2 rounded border border-dark-border bg-dark-hover text-white text-sm"
+                      placeholder="Стиль дизайна (опционально, например: modern minimalist)"
+                      value={style}
+                      onChange={e => setStyle(e.target.value)}
+                      disabled={isGenerating}
+                    />
+                    
+                    <button
+                      onClick={handleGenerateWithFurniture}
+                      className="w-full py-3 bg-primary-main hover:bg-primary-light text-white font-bold rounded-lg transition mt-2 disabled:opacity-50"
+                      disabled={isGenerating || !furniturePrompt}
+                    >
+                      {isGenerating ? 'Генерирую...' : '🎨 Сгенерировать с мебелью'}
+                    </button>
+                  </div>
+                )}
+
+                {/* Custom prompt mode */}
+                {promptType === 'custom' && (
+                  <div className="space-y-2">
+                    <textarea
+                      className="w-full px-3 py-2 rounded border border-dark-border bg-dark-hover text-white text-sm min-h-24 resize-none"
+                      placeholder="Опишите, что вы хотите изменить на фото (например: 'Измени цвет стен с белого на светло-серый', 'Добавь картины на стену', 'Измени освещение на теплый свет')"
+                      value={customPrompt}
+                      onChange={e => setCustomPrompt(e.target.value)}
+                      disabled={isGenerating}
+                    />
+                    
+                    <button
+                      onClick={handleProcessWithCustomPrompt}
+                      className="w-full py-3 bg-primary-main hover:bg-primary-light text-white font-bold rounded-lg transition mt-2 disabled:opacity-50"
+                      disabled={isGenerating || !customPrompt || customPrompt.length < 5}
+                    >
+                      {isGenerating ? 'Обрабатываю...' : '✨ Применить изменения'}
+                    </button>
+                  </div>
+                )}
+              </div>
+
               <button
                 onClick={handleAddFurniture}
-                className="w-full mt-6 py-3 bg-primary-main hover:bg-primary-light text-white font-bold rounded-lg transition"
+                className="w-full mt-4 py-3 bg-primary-main hover:bg-primary-light text-white font-bold rounded-lg transition"
               >
-                ➕ Добавить мебель
+                ➕ Добавить мебель (текстом)
               </button>
 
               <button
