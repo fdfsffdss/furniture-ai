@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: furniture-ai
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: npm install && cd ../frontend && npm install --legacy-peer-deps && cd ../backend && npm run build:frontend
+    startCommand: node src/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
