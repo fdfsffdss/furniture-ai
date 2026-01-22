@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { aiService } from '../lib/api';
+import { aiService } from '@/lib/api';
 import toast from 'react-hot-toast';
 
 interface ChatMessage {

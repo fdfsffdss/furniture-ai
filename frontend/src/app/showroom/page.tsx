@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ChatConsultant } from '../../components/ChatConsultant';
-import { aiService } from '../../lib/api';
+import { ChatConsultant } from '@/components/ChatConsultant';
+import { aiService } from '@/lib/api';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { uploadService, aiService } from '../lib/api';
+import { uploadService, aiService } from '@/lib/api';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
 

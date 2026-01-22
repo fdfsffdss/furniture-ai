@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { interiorService } from '../../lib/api';
-import { GalleryCard } from '../../components/GalleryCard';
+import { interiorService } from '@/lib/api';
+import { GalleryCard } from '@/components/GalleryCard';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 

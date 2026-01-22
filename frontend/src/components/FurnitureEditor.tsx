@@ -1,6 +1,6 @@
 'use client';
 
-import { useInteriorStore } from '../store/useStore';
+import { useInteriorStore } from '@/store/useStore';
 import { motion } from 'framer-motion';
 
 interface FurnitureEditorProps {

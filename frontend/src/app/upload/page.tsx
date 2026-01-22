@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { ImageUpload } from '../../components/ImageUpload';
-import { ChatConsultant } from '../../components/ChatConsultant';
-import { FurnitureEditor } from '../../components/FurnitureEditor';
-import { useInteriorStore } from '../../store/useStore';
-import { aiService, interiorService } from '../../lib/api';
+import { ImageUpload } from '@/components/ImageUpload';
+import { ChatConsultant } from '@/components/ChatConsultant';
+import { FurnitureEditor } from '@/components/FurnitureEditor';
+import { useInteriorStore } from '@/store/useStore';
+import { aiService, interiorService } from '@/lib/api';
 import toast from 'react-hot-toast';
 import { motion } from 'framer-motion';
 
